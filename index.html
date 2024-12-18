@@ -9,10 +9,7 @@
             font-family: 'Arial', sans-serif;
             text-align: center;
             margin-top: 50px;
-            background-image: url(img/WhatsApp\ Image\ 2024-12-11\ at\ 15.09.23.jpeg);
             background-color: black;
-            background-size: cover;
-            background-position: center; 
             color: white;
             position: relative; 
         }
@@ -23,20 +20,26 @@
             z-index: 1;
         }
 
-        h2 {
-            position: relative; 
-            z-index: 1; 
+        #image-container {
+            position: relative;
+            width: 300px; 
+            height: 530px; 
+            margin: 0 auto; 
+            overflow: hidden;
+            border-radius: 0px;
         }
-        
-        p {
-            font-size: 1.2em; 
-            margin: 20px auto; 
-            padding: 0 15px; 
-            line-height: 1.5; 
-            position: relative; 
-            z-index: 1; 
+
+        img {
+            width: auto;
+            height: 530px;
+            border-radius: 40px;
+            transition: opacity 0.5s ease; 
         }
-        
+
+        .hidden {
+            opacity: 0; 
+        }
+
         #cronometro, #cronometro2 {
             font-size: 1.5em;
             margin: 10px;
@@ -46,23 +49,21 @@
             z-index: 1; 
         }
 
-        img {
-            width: auto;
-            height: 530px;
-            border-radius: 40px;
-        }
-        
         #garotinha {
             font-size: 1.8em;
         }
     </style>
 </head>
 <body>
-    <img src="img/agente.jpeg" alt="agente">
+    <div id="image-container">
+        <img id="image" src="img/agente.jpeg" alt="agente">
+        <img id="hover-image" class="hidden" src="img/WhatsApp Image 2024-12-18 at 12.29.44.jpeg" alt="imagem2">
+    </div>
+
     <h1>Guilherme e Emilly</h1>
 
     <h2>Se conhecemos há</h2>
-     <div id="cronometro2">0 dias, 0 horas, 0 minutos, 0 segundos</div>
+    <div id="cronometro2">0 dias, 0 horas, 0 minutos, 0 segundos</div>
 
     <h2>Juntos há</h2>
     <div id="cronometro">0 dias, 0 horas, 0 minutos, 0 segundos</div>
@@ -83,34 +84,68 @@
         const dataInicio = new Date('2024-10-23T00:00:00');
         const dataInicio2 = new Date('2024-08-28T00:00:00');
 
-        function atualizarCronometro() {
+        function calcularTempoDecorrido(data) {
             const agora = new Date();
-            const tempoDecorrido = agora - dataInicio;
+            const tempoDecorrido = agora - data;
 
             const segundos = Math.floor((tempoDecorrido / 1000) % 60);
             const minutos = Math.floor((tempoDecorrido / (1000 * 60)) % 60);
             const horas = Math.floor((tempoDecorrido / (1000 * 60 * 60)) % 24);
-            const dias = Math.floor(tempoDecorrido / (1000 * 60 * 60 * 24));
+            const diasTotais = Math.floor(tempoDecorrido / (1000 * 60 * 60 * 24));
+            const anos = Math.floor(
+            diasTotais / 365);
+            const meses = Math.floor((diasTotais % 365) / 30);
+            const dias = diasTotais % 30;
 
+            return { anos, meses, dias, horas, minutos, segundos };
+        }
+
+        function atualizarCronometro() {
+            const { meses, dias, horas, minutos, segundos } = calcularTempoDecorrido(dataInicio);
             document.getElementById('cronometro').innerText = 
-                `${dias} dias, ${horas} horas, ${minutos} minutos, ${segundos} segundos`;
+                `${meses} meses, ${dias} dias, ${horas} horas, ${minutos} minutos, ${segundos} segundos`;
         }
 
         function atualizarCronometro2() {
-            const agora = new Date();
-            const tempoDecorrido2 = agora - dataInicio2;
-
-            const segundos2 = Math.floor((tempoDecorrido2 / 1000) % 60);
-            const minutos2 = Math.floor((tempoDecorrido2 / (1000 * 60)) % 60);
-            const horas2 = Math.floor((tempoDecorrido2 / (1000 * 60 * 60)) % 24);
-            const dias2 = Math.floor(tempoDecorrido2 / (1000 * 60 * 60 * 24));
-
+            const { meses, dias, horas, minutos, segundos } = calcularTempoDecorrido(dataInicio2);
             document.getElementById('cronometro2').innerText = 
-                `${dias2} dias, ${horas2} horas, ${minutos2} minutos, ${segundos2} segundos`;
+                `${meses} meses, ${dias} dias, ${horas} horas, ${minutos} minutos, ${segundos} segundos`;
         }
 
         setInterval(atualizarCronometro, 1000);
         setInterval(atualizarCronometro2, 1000);
+
+        const images = [
+            'img/agente.jpeg',
+            'img/WhatsApp Image 2024-12-18 at 12.29.44.jpeg', 
+            
+        ];
+
+        let currentIndex = 0;
+        const image = document.getElementById('image');
+        const hoverImage = document.getElementById('hover-image');
+
+        function updateImages() {
+            image.src = images[currentIndex];
+            hoverImage.src = images[(currentIndex + 1) % images.length];
+        }
+
+        function nextImage() {
+            currentIndex = (currentIndex + 1) % images.length;
+            updateImages();
+        }
+
+        setInterval(nextImage, 3000); 
+
+        image.addEventListener('mouseenter', () => {
+            hoverImage.classList.remove('hidden'); 
+        });
+
+        image.addEventListener('mouseleave', () => {
+            hoverImage.classList.add('hidden');
+        });
+
+        updateImages(); 
     </script>
 </body>
 </html>
